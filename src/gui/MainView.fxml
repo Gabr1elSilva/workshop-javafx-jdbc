@@ -11,14 +11,14 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<ScrollPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="780.0" prefWidth="1000.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/21">
+<ScrollPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="780.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.MainViewController">
   <content>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="778.0" prefWidth="997.0">
          <children>
             <TextField layoutX="92.0" layoutY="53.0" />
             <TextField layoutX="92.0" layoutY="84.0" prefHeight="25.0" prefWidth="230.0" />
             <TextField layoutX="92.0" layoutY="116.0" />
-            <Button layoutX="296.0" layoutY="146.0" mnemonicParsing="false" text="Pesquisar" />
+            <Button fx:id="pesquisarBotaoPessoa" layoutX="296.0" layoutY="146.0" mnemonicParsing="false" onAction="#onPesquisarBotaoPessoaAction" text="Pesquisar" />
             <DatePicker layoutX="98.0" layoutY="184.0" />
             <DatePicker layoutX="98.0" layoutY="220.0" />
             <TableView layoutX="11.0" layoutY="268.0" prefHeight="430.0" prefWidth="470.0">
@@ -32,15 +32,18 @@
             <TextField layoutX="581.0" layoutY="59.0" />
             <TextField layoutX="581.0" layoutY="90.0" prefHeight="25.0" prefWidth="230.0" />
             <TextField layoutX="581.0" layoutY="124.0" prefHeight="130.0" prefWidth="230.0" />
-            <Button layoutX="847.0" layoutY="159.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="90.0" text="Pesquisar" />
-            <TableView layoutX="518.0" layoutY="268.0" prefHeight="430.0" prefWidth="460.0">
+            <Button fx:id="pesquisarBotaoVacina" layoutX="847.0" layoutY="159.0" mnemonicParsing="false" onAction="#onPesquisarBotaoVacinaAction" prefHeight="25.0" prefWidth="90.0" text="Pesquisar" />
+            <TableView layoutX="518.0" layoutY="268.0" prefHeight="430.0" prefWidth="372.0">
               <columns>
                 <TableColumn prefWidth="75.0" text="Código" />
-                <TableColumn prefWidth="168.0" text="Nome" />
-                  <TableColumn prefWidth="216.0" text="Descrição" />
+                <TableColumn minWidth="2.0" prefWidth="121.0" text="Nome" />
+                  <TableColumn prefWidth="175.0" text="Descrição" />
               </columns>
             </TableView>
-            <Button layoutX="439.0" layoutY="720.0" mnemonicParsing="false" text="Criar Aplicação">
+            <Button fx:id="novaBotaoVacina" layoutX="905.0" layoutY="435.0" mnemonicParsing="false" onAction="#onNovaBotaoVacinaAction" prefHeight="25.0" prefWidth="65.0" text="Nova" />
+            <Button fx:id="editarBotaoVacina" layoutX="905.0" layoutY="471.0" mnemonicParsing="false" onAction="#onEditarBotaoVacinaAction" prefHeight="25.0" prefWidth="65.0" text="Editar" />
+            <Button fx:id="removerBotaoVacina" layoutX="905.0" layoutY="506.0" mnemonicParsing="false" onAction="#onRemoverBotaoVacinaAction" prefHeight="25.0" prefWidth="65.0" text="Remover" />
+            <Button fx:id="criarAplicacaoBotao" layoutX="439.0" layoutY="720.0" mnemonicParsing="false" onAction="#onCriarAplicacaoBotaoAction" text="Criar Aplicação">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
