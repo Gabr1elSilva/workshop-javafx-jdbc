@@ -21,23 +21,23 @@
             <Button fx:id="pesquisarBotaoPessoa" layoutX="296.0" layoutY="146.0" mnemonicParsing="false" onAction="#onPesquisarBotaoPessoaAction" text="Pesquisar" />
             <DatePicker layoutX="98.0" layoutY="184.0" />
             <DatePicker layoutX="98.0" layoutY="220.0" />
-            <TableView layoutX="11.0" layoutY="268.0" prefHeight="430.0" prefWidth="470.0">
+            <TableView fx:id="tablePessoaView" layoutX="11.0" layoutY="268.0" prefHeight="430.0" prefWidth="470.0">
               <columns>
-                <TableColumn prefWidth="75.0" text="Código" />
-                <TableColumn prefWidth="156.0" text="Nome" />
-                  <TableColumn prefWidth="131.0" text="CPF" />
-                  <TableColumn prefWidth="107.0" text="Nascimento" />
+                <TableColumn fx:id="tablePessoaColumnCodigo" prefWidth="75.0" text="Código" />
+                <TableColumn fx:id="tablePessoaColumnNome" prefWidth="156.0" text="Nome" />
+                  <TableColumn fx:id="tablePessoaColumnCpf" prefWidth="131.0" text="CPF" />
+                  <TableColumn fx:id="tablePessoaColumnNascimento" prefWidth="107.0" text="Nascimento" />
               </columns>
             </TableView>
             <TextField layoutX="581.0" layoutY="59.0" />
             <TextField layoutX="581.0" layoutY="90.0" prefHeight="25.0" prefWidth="230.0" />
             <TextField layoutX="581.0" layoutY="124.0" prefHeight="130.0" prefWidth="230.0" />
             <Button fx:id="pesquisarBotaoVacina" layoutX="847.0" layoutY="159.0" mnemonicParsing="false" onAction="#onPesquisarBotaoVacinaAction" prefHeight="25.0" prefWidth="90.0" text="Pesquisar" />
-            <TableView layoutX="518.0" layoutY="268.0" prefHeight="430.0" prefWidth="372.0">
+            <TableView fx:id="tableVacinaView" layoutX="518.0" layoutY="268.0" prefHeight="430.0" prefWidth="372.0">
               <columns>
-                <TableColumn prefWidth="75.0" text="Código" />
-                <TableColumn minWidth="2.0" prefWidth="121.0" text="Nome" />
-                  <TableColumn prefWidth="175.0" text="Descrição" />
+                <TableColumn fx:id="tableVacinaColumnCodigo" prefWidth="75.0" text="Código" />
+                <TableColumn fx:id="tableVacinaColumnNome" minWidth="2.0" prefWidth="121.0" text="Nome" />
+                  <TableColumn fx:id="tableVacinaColumnDescricao" prefWidth="175.0" text="Descrição" />
               </columns>
             </TableView>
             <Button fx:id="novaBotaoVacina" layoutX="905.0" layoutY="435.0" mnemonicParsing="false" onAction="#onNovaBotaoVacinaAction" prefHeight="25.0" prefWidth="65.0" text="Nova" />

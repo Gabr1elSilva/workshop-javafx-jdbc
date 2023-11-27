@@ -6,8 +6,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-
-<VBox prefHeight="450.0" prefWidth="700.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/21">
+<VBox prefHeight="450.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.VacinaController">
    <children>
       <AnchorPane prefHeight="460.0" prefWidth="700.0">
          <children>
@@ -17,8 +16,8 @@
             <TextField layoutX="255.0" layoutY="145.0" prefHeight="25.0" prefWidth="250.0" />
             <Text layoutX="195.0" layoutY="195.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Descrição:" />
             <TextField layoutX="255.0" layoutY="178.0" prefHeight="160.0" prefWidth="250.0" />
-            <Button layoutX="325.0" layoutY="364.0" mnemonicParsing="false" text="Ok" />
-            <Button layoutX="373.0" layoutY="364.0" mnemonicParsing="false" text="Cancelar" />
+            <Button fx:id="btOK" layoutX="325.0" layoutY="364.0" mnemonicParsing="false" onAction="#OnBtOkAction" text="Ok" />
+            <Button fx:id="btCancelar" layoutX="373.0" layoutY="364.0" mnemonicParsing="false" onAction="#OnBtCancelarAction" text="Cancelar" />
          </children>
       </AnchorPane>
    </children>
