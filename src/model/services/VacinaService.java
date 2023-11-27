@@ -21,4 +21,8 @@ public class VacinaService {
 			dao.update(obj);
 		}
 	}
+	
+	public void deleteByCodigo(Long codigo) {
+        dao.deleteByCodigo(codigo);
+    }
 }

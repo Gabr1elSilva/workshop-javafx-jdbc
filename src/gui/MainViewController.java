@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import gui.listeners.DataChangeListener;
@@ -16,8 +17,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -29,6 +32,8 @@ import model.entities.Vacina;
 import model.services.VacinaService;
 
 public class MainViewController implements Initializable, DataChangeListener {
+
+	private VacinaService vacina;
 
 	@FXML
 	private Button criarAplicacaoBotao;
@@ -107,11 +112,29 @@ public class MainViewController implements Initializable, DataChangeListener {
 
 	@FXML
 	void onRemoverBotaoVacinaAction() {
-		System.out.println("onRemoverBotaoVacinaAction");
+		Vacina vacinaSelecionada = tableVacinaView.getSelectionModel().getSelectedItem();
+
+		if (vacinaSelecionada != null) {
+			Alert alert = new Alert(AlertType.CONFIRMATION);
+			alert.setTitle("Confirmação");
+			alert.setHeaderText(null);
+			alert.setContentText("Tem certeza de que deseja excluir esta vacina?");
+
+			Optional<ButtonType> result = alert.showAndWait();
+
+			if (result.isPresent() && result.get() == ButtonType.OK) {
+				vacina.deleteByCodigo(vacinaSelecionada.getCodigo());
+				pesquisarTodasVacinas();
+			}
+		} else {
+			Alerts.showAlert("Nenhuma vacina selecionada", null, "Por favor, selecione uma vacina para remover.",
+					AlertType.WARNING);
+		}
 	}
 
 	@Override
 	public void initialize(URL uri, ResourceBundle rb) {
+		this.vacina = new VacinaService();
 		initializeNodes();
 		pesquisarTodasVacinas();
 	}
