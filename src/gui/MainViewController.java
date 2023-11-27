@@ -90,13 +90,15 @@ public class MainViewController implements Initializable {
 	@FXML
 	void onEditarBotaoVacinaAction(ActionEvent event) {
 		Stage parentStage = Utils.currentStage(event);
-		createDialogForm("/gui/VacinaForm.fxml", parentStage);
+		Vacina obj = new Vacina();
+		createDialogForm(obj,"/gui/VacinaForm.fxml", parentStage);
 	}
 
 	@FXML
 	void onNovaBotaoVacinaAction(ActionEvent event) {
 		Stage parentStage = Utils.currentStage(event);
-		createDialogForm("/gui/VacinaForm.fxml", parentStage);
+		Vacina obj = new Vacina();
+		createDialogForm(obj, "/gui/VacinaForm.fxml", parentStage);
 	}
 
 	@FXML
@@ -168,10 +170,14 @@ public class MainViewController implements Initializable {
 		}
 	}
 
-	private void createDialogForm(String absoluteName, Stage parentStage) {
+	private void createDialogForm(Vacina obj, String absoluteName, Stage parentStage) {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
 			Pane pane = loader.load();
+			
+			VacinaFormController controller = loader.getController();
+			controller.setVacina(obj);
+			controller.updateVacinaFormData();
 
 			Stage dialogStage = new Stage();
 			dialogStage.setTitle("Formulário de registro de vacina");

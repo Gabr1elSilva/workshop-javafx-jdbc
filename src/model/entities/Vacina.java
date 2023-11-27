@@ -7,9 +7,6 @@ public class Vacina {
 	private Situacao situacao;
 
 	public Vacina() {
-		codigo = -1L;
-		nome = "sem nome";
-		descricao = "sem descricao";
 		situacao = Situacao.ATIVO;
 	}
 
