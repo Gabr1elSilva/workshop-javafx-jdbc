@@ -33,22 +33,16 @@ public class VacinaFormController implements Initializable {
 
 	@FXML
 	private TextField txtNome;
-
 	@FXML
 	private TextField txtDescricao;
-
 	@FXML
 	private Label labelErrorCodigo;
-
 	@FXML
 	private Label labelErrorNome;
-
 	@FXML
 	private Label labelErrorDescricao;
-
 	@FXML
 	private Button btOK;
-
 	@FXML
 	private Button btCancelar;
 
@@ -83,7 +77,7 @@ public class VacinaFormController implements Initializable {
 	}
 
 	private void notifyDataChangeListeners() {
-		for (DataChangeListener listener : dataChangeListeners) {
+		for(DataChangeListener listener : dataChangeListeners) {
 			listener.onDataChanged();
 		}
 	}
@@ -121,7 +115,5 @@ public class VacinaFormController implements Initializable {
 		txtCodigo.setText(String.valueOf(entity.getCodigo()));
 		txtNome.setText(entity.getNome());
 		txtDescricao.setText(entity.getDescricao());
-
 	}
-
 }

@@ -30,8 +30,6 @@ import model.services.VacinaService;
 
 public class MainViewController implements Initializable, DataChangeListener {
 
-	private VacinaService vacina;
-
 	@FXML
 	private Button criarAplicacaoBotao;
 
@@ -76,8 +74,6 @@ public class MainViewController implements Initializable, DataChangeListener {
 
 	@FXML
 	private TableColumn<Pessoa, LocalDate> tablePessoaColumnNascimento;
-
-	private ObservableList<Vacina> obslist;
 
 	public void setVacinaService(VacinaService vacina) {
 		this.vacina = vacina;
@@ -135,38 +131,22 @@ public class MainViewController implements Initializable, DataChangeListener {
 		tablePessoaColumnNascimento.setCellValueFactory(new PropertyValueFactory<>("dataNascimento"));
 	}
 
-	public void updateTableVacinaView() {
-		if (vacina == null) {
-			throw new IllegalStateException("A lista de vacina está nula");
-		}
-		List<Vacina> list = vacina.findAll();
-		obslist = FXCollections.observableArrayList(list);
-		tableVacinaView.setItems(obslist);
-	}
-
 	private void pesquisarTodasVacinas() {
 		try {
-
 			VacinaService vacinaService = new VacinaService();
-
 			List<Vacina> listaVacinas = vacinaService.findAll();
-
 			atualizarTabelaVacinas(listaVacinas);
 		} catch (Exception e) {
-
 			e.printStackTrace();
 		}
 	}
 
 	private void atualizarTabelaVacinas(List<Vacina> listaVacinas) {
 		if (listaVacinas != null) {
-
 			ObservableList<Vacina> obsList = FXCollections.observableArrayList(listaVacinas);
-
 			tableVacinaView.getItems().clear();
 			tableVacinaView.setItems(obsList);
 		} else {
-
 			System.err.println("A lista de vacinas é nula.");
 		}
 	}
@@ -196,6 +176,6 @@ public class MainViewController implements Initializable, DataChangeListener {
 
 	@Override
 	public void onDataChanged() {
-		updateTableVacinaView();
+		pesquisarTodasVacinas();
 	}
 }
