@@ -177,6 +177,7 @@ public class MainViewController implements Initializable {
 			
 			VacinaFormController controller = loader.getController();
 			controller.setVacina(obj);
+			controller.setVacinaService(new VacinaService());
 			controller.updateVacinaFormData();
 
 			Stage dialogStage = new Stage();

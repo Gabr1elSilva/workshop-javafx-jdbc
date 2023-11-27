@@ -3,17 +3,25 @@ package gui;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import db.DbException;
+import gui.util.Alerts;
 import gui.util.Constraints;
+import gui.util.Utils;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import model.entities.Vacina;
+import model.services.VacinaService;
 
 public class VacinaFormController implements Initializable {
 
 	private Vacina entity;
+
+	private VacinaService service;
 
 	@FXML
 	private TextField txtCodigo;
@@ -43,14 +51,40 @@ public class VacinaFormController implements Initializable {
 		this.entity = entity;
 	}
 
-	@FXML
-	public void OnBtOkAction() {
-		System.out.println("OnBtOkAction");
+	public void setVacinaService(VacinaService service) {
+		this.service = service;
 	}
 
 	@FXML
-	public void OnBtCancelarAction() {
-		System.out.println("OnBtCancelarAction");
+	public void OnBtOkAction(ActionEvent event) {
+		if(entity == null) {
+			throw new IllegalStateException("A entidade estava nula");
+		}
+		if(service == null) {
+			throw new IllegalStateException("Serviço estava nulo.");
+		}
+		try {
+			entity = getFormData();
+			service.saveOrUpdate(entity);
+			Utils.currentStage(event).close();
+		} catch(DbException e) {
+			Alerts.showAlert("Error saving object", null, e.getMessage(), AlertType.ERROR);
+		}
+	}
+
+	private Vacina getFormData() {
+		Vacina obj = new Vacina();
+
+		obj.setCodigo(Utils.tryParseToLong(txtCodigo.getText()));
+		obj.setNome(txtNome.getText());
+		obj.setDescricao(txtDescricao.getText());
+
+		return obj;
+	}
+
+	@FXML
+	public void OnBtCancelarAction(ActionEvent event) {
+		Utils.currentStage(event).close();
 	}
 
 	@Override
