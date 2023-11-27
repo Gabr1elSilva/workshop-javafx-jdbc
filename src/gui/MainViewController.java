@@ -16,7 +16,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -136,6 +135,7 @@ public class MainViewController implements Initializable {
 	@Override
 	public void initialize(URL uri, ResourceBundle rb) {
 		initializeNodes();
+		pesquisarTodasVacinas();
 	}
 
 	private void initializeNodes() {
@@ -143,10 +143,10 @@ public class MainViewController implements Initializable {
 		tableVacinaColumnNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
 		tableVacinaColumnDescricao.setCellValueFactory(new PropertyValueFactory<>("descricao"));
 
-		tablePessoaColumnCodigo.setCellValueFactory(new PropertyValueFactory<>("Código"));
-		tablePessoaColumnNome.setCellValueFactory(new PropertyValueFactory<>("Nome"));
-		tablePessoaColumnCpf.setCellValueFactory(new PropertyValueFactory<>("CPF"));
-		tablePessoaColumnNascimento.setCellValueFactory(new PropertyValueFactory<>("Nascimento"));
+		tablePessoaColumnCodigo.setCellValueFactory(new PropertyValueFactory<>("codigo"));
+		tablePessoaColumnNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
+		tablePessoaColumnCpf.setCellValueFactory(new PropertyValueFactory<>("cpf"));
+		tablePessoaColumnNascimento.setCellValueFactory(new PropertyValueFactory<>("dataNascimento"));
 	}
 
 	public void updateTableVacinaView() {
@@ -157,33 +157,31 @@ public class MainViewController implements Initializable {
 		obslist = FXCollections.observableArrayList(list);
 		tableVacinaView.setItems(obslist);
 	}
-	
-    private void pesquisarTodasVacinas() {
-        try {
-            // Cria uma instância do VacinaService
-            VacinaService vacinaService = new VacinaService();
 
-            // Obtém a lista de todas as vacinas
-            List<Vacina> listaVacinas = vacinaService.findAll();
+	private void pesquisarTodasVacinas() {
+		try {
 
-            // Atualiza a tabela com a nova lista de vacinas
-            atualizarTabelaVacinas(listaVacinas);
-        } catch (Exception e) {
-            // Trate exceções, se necessário
-            e.printStackTrace();
-        }
-    }
-    private void atualizarTabelaVacinas(List<Vacina> listaVacinas) {
-        if (listaVacinas != null) {
-            // Cria uma ObservableList a partir da lista de vacinas
-            ObservableList<Vacina> obsList = FXCollections.observableArrayList(listaVacinas);
+			VacinaService vacinaService = new VacinaService();
 
-            // Limpa a tabela e define os novos itens
-            tableVacinaView.getItems().clear();
-            tableVacinaView.setItems(obsList);
-        } else {
-            // Em caso de lista nula, pode tratar conforme sua necessidade
-            System.err.println("A lista de vacinas é nula.");
-        }
-    }
+			List<Vacina> listaVacinas = vacinaService.findAll();
+
+			atualizarTabelaVacinas(listaVacinas);
+		} catch (Exception e) {
+
+			e.printStackTrace();
+		}
+	}
+
+	private void atualizarTabelaVacinas(List<Vacina> listaVacinas) {
+		if (listaVacinas != null) {
+
+			ObservableList<Vacina> obsList = FXCollections.observableArrayList(listaVacinas);
+
+			tableVacinaView.getItems().clear();
+			tableVacinaView.setItems(obsList);
+		} else {
+
+			System.err.println("A lista de vacinas é nula.");
+		}
+	}
 }

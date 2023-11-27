@@ -15,7 +15,7 @@ public class Pessoa {
 		nome = "Sem nome";
 		cpf = "Sem CPF";
 		dataNascimento = LocalDate.now();
-		situacao = situacao.ATIVO;
+		situacao = Situacao.ATIVO;
 	}
 
 	public Pessoa(Long codigo, String nome, String cpf, LocalDate dataNascimento, Situacao situacao) {
