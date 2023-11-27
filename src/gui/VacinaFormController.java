@@ -1,9 +1,12 @@
 package gui;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import db.DbException;
+import gui.listeners.DataChangeListener;
 import gui.util.Alerts;
 import gui.util.Constraints;
 import gui.util.Utils;
@@ -22,6 +25,8 @@ public class VacinaFormController implements Initializable {
 	private Vacina entity;
 
 	private VacinaService service;
+
+	private List<DataChangeListener> dataChangeListeners = new ArrayList<>();
 
 	@FXML
 	private TextField txtCodigo;
@@ -55,20 +60,31 @@ public class VacinaFormController implements Initializable {
 		this.service = service;
 	}
 
+	public void subscribeDataChangeListener(DataChangeListener listener) {
+		dataChangeListeners.add(listener);
+	}
+
 	@FXML
 	public void OnBtOkAction(ActionEvent event) {
-		if(entity == null) {
+		if (entity == null) {
 			throw new IllegalStateException("A entidade estava nula");
 		}
-		if(service == null) {
+		if (service == null) {
 			throw new IllegalStateException("Serviço estava nulo.");
 		}
 		try {
 			entity = getFormData();
 			service.saveOrUpdate(entity);
+			notifyDataChangeListeners();
 			Utils.currentStage(event).close();
-		} catch(DbException e) {
+		} catch (DbException e) {
 			Alerts.showAlert("Error saving object", null, e.getMessage(), AlertType.ERROR);
+		}
+	}
+
+	private void notifyDataChangeListeners() {
+		for (DataChangeListener listener : dataChangeListeners) {
+			listener.onDataChanged();
 		}
 	}
 

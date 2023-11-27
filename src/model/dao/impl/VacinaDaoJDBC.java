@@ -79,19 +79,19 @@ public class VacinaDaoJDBC implements VacinaDao {
 		ResultSet rs = null;
 		try {
 			st = conn.prepareStatement("INSERT INTO vacina (Nome, Descricao) VALUES (?, ?)",
-	                Statement.RETURN_GENERATED_KEYS);
+					Statement.RETURN_GENERATED_KEYS);
 
-	        st.setString(1, obj.getNome());
-	        st.setString(2, obj.getDescricao());
+			st.setString(1, obj.getNome());
+			st.setString(2, obj.getDescricao());
 
-	        int rowsAffected = st.executeUpdate();
+			int rowsAffected = st.executeUpdate();
 
-	        if (rowsAffected > 0) {
-	            rs = st.getGeneratedKeys();
-	            if (rs.next()) {
-	                long codigo = rs.getLong(1);
-	                obj.setCodigo(codigo);
-	            }
+			if (rowsAffected > 0) {
+				rs = st.getGeneratedKeys();
+				if (rs.next()) {
+					long codigo = rs.getLong(1);
+					obj.setCodigo(codigo);
+				}
 			} else {
 				throw new DbException("Failed to get generated key for Vacina.");
 			}

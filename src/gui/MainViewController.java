@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import gui.listeners.DataChangeListener;
 import gui.util.Alerts;
 import gui.util.Utils;
 import javafx.collections.FXCollections;
@@ -27,7 +28,7 @@ import model.entities.Pessoa;
 import model.entities.Vacina;
 import model.services.VacinaService;
 
-public class MainViewController implements Initializable {
+public class MainViewController implements Initializable, DataChangeListener {
 
 	private VacinaService vacina;
 
@@ -91,7 +92,7 @@ public class MainViewController implements Initializable {
 	void onEditarBotaoVacinaAction(ActionEvent event) {
 		Stage parentStage = Utils.currentStage(event);
 		Vacina obj = new Vacina();
-		createDialogForm(obj,"/gui/VacinaForm.fxml", parentStage);
+		createDialogForm(obj, "/gui/VacinaForm.fxml", parentStage);
 	}
 
 	@FXML
@@ -174,10 +175,11 @@ public class MainViewController implements Initializable {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
 			Pane pane = loader.load();
-			
+
 			VacinaFormController controller = loader.getController();
 			controller.setVacina(obj);
 			controller.setVacinaService(new VacinaService());
+			controller.subscribeDataChangeListener(this);
 			controller.updateVacinaFormData();
 
 			Stage dialogStage = new Stage();
@@ -190,5 +192,10 @@ public class MainViewController implements Initializable {
 		} catch (IOException e) {
 			Alerts.showAlert("IO Exception", "Erro ao carregar a janela", e.getMessage(), AlertType.ERROR);
 		}
+	}
+
+	@Override
+	public void onDataChanged() {
+		updateTableVacinaView();
 	}
 }
