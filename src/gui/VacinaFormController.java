@@ -3,7 +3,9 @@ package gui;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import db.DbException;
 import gui.listeners.DataChangeListener;
@@ -18,6 +20,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import model.entities.Vacina;
+import model.exceptions.ValidationException;
 import model.services.VacinaService;
 
 public class VacinaFormController implements Initializable {
@@ -71,13 +74,15 @@ public class VacinaFormController implements Initializable {
 			service.saveOrUpdate(entity);
 			notifyDataChangeListeners();
 			Utils.currentStage(event).close();
+		} catch (ValidationException e) {
+			setErrorMessages(e.getErrors());
 		} catch (DbException e) {
 			Alerts.showAlert("Error saving object", null, e.getMessage(), AlertType.ERROR);
 		}
 	}
 
 	private void notifyDataChangeListeners() {
-		for(DataChangeListener listener : dataChangeListeners) {
+		for (DataChangeListener listener : dataChangeListeners) {
 			listener.onDataChanged();
 		}
 	}
@@ -85,9 +90,18 @@ public class VacinaFormController implements Initializable {
 	private Vacina getFormData() {
 		Vacina obj = new Vacina();
 
+		ValidationException exception = new ValidationException("Validation Error");
+
 		obj.setCodigo(Utils.tryParseToLong(txtCodigo.getText()));
+		if (txtNome.getText() == null || txtNome.getText().trim().equals("")) {
+			exception.addError("nome", "O campo não pode ser vazio");
+		}
 		obj.setNome(txtNome.getText());
 		obj.setDescricao(txtDescricao.getText());
+
+		if (exception.getErrors().size() > 0) {
+			throw exception;
+		}
 
 		return obj;
 	}
@@ -115,5 +129,13 @@ public class VacinaFormController implements Initializable {
 		txtCodigo.setText(String.valueOf(entity.getCodigo()));
 		txtNome.setText(entity.getNome());
 		txtDescricao.setText(entity.getDescricao());
+	}
+
+	private void setErrorMessages(Map<String, String> errors) {
+		Set<String> fields = errors.keySet();
+
+		if (fields.contains("nome")) {
+			labelErrorNome.setText(errors.get("nome"));
+		}
 	}
 }

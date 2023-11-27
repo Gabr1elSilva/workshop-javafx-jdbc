@@ -75,10 +75,6 @@ public class MainViewController implements Initializable, DataChangeListener {
 	@FXML
 	private TableColumn<Pessoa, LocalDate> tablePessoaColumnNascimento;
 
-	public void setVacinaService(VacinaService vacina) {
-		this.vacina = vacina;
-	}
-
 	@FXML
 	void onCriarAplicacaoBotaoAction() {
 		System.out.println("onCriarAplicacaoBotaoAction");
