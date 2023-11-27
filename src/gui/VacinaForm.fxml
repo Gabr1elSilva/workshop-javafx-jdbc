@@ -10,10 +10,9 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-
-<AnchorPane prefHeight="301.0" prefWidth="461.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/21">
+<AnchorPane prefHeight="301.0" prefWidth="461.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.VacinaFormController">
    <children>
-      <GridPane prefHeight="267.0" prefWidth="426.0" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="20.0">
+      <GridPane prefHeight="267.0" prefWidth="439.0" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="20.0">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" maxWidth="150.0" minWidth="10.0" prefWidth="65.0" />
           <ColumnConstraints hgrow="SOMETIMES" maxWidth="265.0" minWidth="10.0" prefWidth="193.0" />
@@ -29,14 +28,16 @@
             <Label text="Código:" />
             <Label text="Nome:" GridPane.rowIndex="1" />
             <Label text="Descrição:" GridPane.rowIndex="2" />
-            <TextField GridPane.columnIndex="1" />
-            <TextField prefHeight="104.0" prefWidth="227.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <TextField GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <Label textFill="RED" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            <TextField fx:id="txtCodigo" GridPane.columnIndex="1" />
+            <TextField fx:id="txtNome" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <TextField fx:id="txtDescricao" prefHeight="104.0" prefWidth="227.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <Label fx:id="labelErrorCodigo" textFill="RED" GridPane.columnIndex="2" />
+            <Label fx:id="labelErrorNome" textFill="RED" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            <Label fx:id="labelErrorDescricao" textFill="RED" GridPane.columnIndex="2" GridPane.rowIndex="2" />
             <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
                <children>
-                  <Button mnemonicParsing="false" text="Ok" />
-                  <Button mnemonicParsing="false" text="Cancelar" />
+                  <Button fx:id="btOK" mnemonicParsing="false" onAction="#OnBtOkAction" text="Ok" />
+                  <Button fx:id="btCancelar" mnemonicParsing="false" onAction="#OnBtCancelarAction" text="Cancelar" />
                </children>
                <padding>
                   <Insets top="5.0" />

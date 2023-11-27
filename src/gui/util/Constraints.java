@@ -27,4 +27,17 @@ public class Constraints {
                 }
 		    });
 	}
+	
+	public static void setTextFieldLong(TextField textField) {
+	    textField.textProperty().addListener((observable, oldValue, newValue) -> {
+	        try {
+	            if (newValue != null && !newValue.isEmpty()) {
+	                Long.parseLong(newValue);
+	            }
+	        } catch (NumberFormatException e) {
+	            textField.setText(oldValue);
+	        }
+	    });
+	}
+
 }
