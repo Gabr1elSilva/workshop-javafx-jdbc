@@ -7,8 +7,10 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import gui.util.Alerts;
+import gui.util.Utils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -19,6 +21,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.entities.Pessoa;
@@ -86,13 +89,15 @@ public class MainViewController implements Initializable {
 	}
 
 	@FXML
-	void onEditarBotaoVacinaAction() {
-		loadView("/gui/VacinaRegistrationView.fxml");
+	void onEditarBotaoVacinaAction(ActionEvent event) {
+		Stage parentStage = Utils.currentStage(event);
+		createDialogForm("/gui/VacinaForm.fxml", parentStage);
 	}
 
 	@FXML
-	void onNovaBotaoVacinaAction() {
-		loadView("/gui/VacinaRegistrationView.fxml");
+	void onNovaBotaoVacinaAction(ActionEvent event) {
+		Stage parentStage = Utils.currentStage(event);
+		createDialogForm("/gui/VacinaForm.fxml", parentStage);
 	}
 
 	@FXML
@@ -109,27 +114,6 @@ public class MainViewController implements Initializable {
 	@FXML
 	void onRemoverBotaoVacinaAction() {
 		System.out.println("onRemoverBotaoVacinaAction");
-	}
-
-	private synchronized void loadView(String absoluteName) {
-		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
-			Parent root = loader.load();
-
-			Scene scene = new Scene(root);
-
-			Stage newStage = new Stage();
-			newStage.setTitle("Nova Janela");
-
-			newStage.initModality(Modality.WINDOW_MODAL);
-
-			newStage.setScene(scene);
-
-			newStage.show();
-
-		} catch (IOException e) {
-			Alerts.showAlert("IO Exception", "Erro carregando a página", e.getMessage(), AlertType.ERROR);
-		}
 	}
 
 	@Override
@@ -182,6 +166,23 @@ public class MainViewController implements Initializable {
 		} else {
 
 			System.err.println("A lista de vacinas é nula.");
+		}
+	}
+
+	private void createDialogForm(String absoluteName, Stage parentStage) {
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
+			Pane pane = loader.load();
+
+			Stage dialogStage = new Stage();
+			dialogStage.setTitle("Formulário de registro de vacina");
+			dialogStage.setScene(new Scene(pane));
+			dialogStage.setResizable(false);
+			dialogStage.initOwner(parentStage);
+			dialogStage.initModality(Modality.WINDOW_MODAL);
+			dialogStage.showAndWait();
+		} catch (IOException e) {
+			Alerts.showAlert("IO Exception", "Erro ao carregar a janela", e.getMessage(), AlertType.ERROR);
 		}
 	}
 }
