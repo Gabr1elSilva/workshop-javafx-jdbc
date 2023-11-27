@@ -3,9 +3,12 @@ package gui;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import gui.util.Alerts;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -13,6 +16,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -20,8 +24,11 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.entities.Pessoa;
 import model.entities.Vacina;
+import model.services.VacinaService;
 
 public class MainViewController implements Initializable {
+
+	private VacinaService vacina;
 
 	@FXML
 	private Button criarAplicacaoBotao;
@@ -68,6 +75,12 @@ public class MainViewController implements Initializable {
 	@FXML
 	private TableColumn<Pessoa, LocalDate> tablePessoaColumnNascimento;
 
+	private ObservableList<Vacina> obslist;
+
+	public void setVacinaService(VacinaService vacina) {
+		this.vacina = vacina;
+	}
+
 	@FXML
 	void onCriarAplicacaoBotaoAction() {
 		System.out.println("onCriarAplicacaoBotaoAction");
@@ -90,6 +103,7 @@ public class MainViewController implements Initializable {
 
 	@FXML
 	void onPesquisarBotaoVacinaAction() {
+		pesquisarTodasVacinas();
 		System.out.println("onPesquisarBotaoVacinaAction");
 	}
 
@@ -125,9 +139,9 @@ public class MainViewController implements Initializable {
 	}
 
 	private void initializeNodes() {
-		tableVacinaColumnCodigo.setCellValueFactory(new PropertyValueFactory<>("Código"));
-		tableVacinaColumnNome.setCellValueFactory(new PropertyValueFactory<>("Nome"));
-		tableVacinaColumnDescricao.setCellValueFactory(new PropertyValueFactory<>("Descrição"));
+		tableVacinaColumnCodigo.setCellValueFactory(new PropertyValueFactory<>("codigo"));
+		tableVacinaColumnNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
+		tableVacinaColumnDescricao.setCellValueFactory(new PropertyValueFactory<>("descricao"));
 
 		tablePessoaColumnCodigo.setCellValueFactory(new PropertyValueFactory<>("Código"));
 		tablePessoaColumnNome.setCellValueFactory(new PropertyValueFactory<>("Nome"));
@@ -135,4 +149,41 @@ public class MainViewController implements Initializable {
 		tablePessoaColumnNascimento.setCellValueFactory(new PropertyValueFactory<>("Nascimento"));
 	}
 
+	public void updateTableVacinaView() {
+		if (vacina == null) {
+			throw new IllegalStateException("A lista de vacina está nula");
+		}
+		List<Vacina> list = vacina.findAll();
+		obslist = FXCollections.observableArrayList(list);
+		tableVacinaView.setItems(obslist);
+	}
+	
+    private void pesquisarTodasVacinas() {
+        try {
+            // Cria uma instância do VacinaService
+            VacinaService vacinaService = new VacinaService();
+
+            // Obtém a lista de todas as vacinas
+            List<Vacina> listaVacinas = vacinaService.findAll();
+
+            // Atualiza a tabela com a nova lista de vacinas
+            atualizarTabelaVacinas(listaVacinas);
+        } catch (Exception e) {
+            // Trate exceções, se necessário
+            e.printStackTrace();
+        }
+    }
+    private void atualizarTabelaVacinas(List<Vacina> listaVacinas) {
+        if (listaVacinas != null) {
+            // Cria uma ObservableList a partir da lista de vacinas
+            ObservableList<Vacina> obsList = FXCollections.observableArrayList(listaVacinas);
+
+            // Limpa a tabela e define os novos itens
+            tableVacinaView.getItems().clear();
+            tableVacinaView.setItems(obsList);
+        } else {
+            // Em caso de lista nula, pode tratar conforme sua necessidade
+            System.err.println("A lista de vacinas é nula.");
+        }
+    }
 }
