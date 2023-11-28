@@ -28,10 +28,9 @@
             <Label text="Código:" />
             <Label text="Nome:" GridPane.rowIndex="1" />
             <Label text="Descrição:" GridPane.rowIndex="2" />
-            <TextField fx:id="txtCodigo" GridPane.columnIndex="1" />
+            <TextField fx:id="txtCodigo" editable="false" GridPane.columnIndex="1" />
             <TextField fx:id="txtNome" GridPane.columnIndex="1" GridPane.rowIndex="1" />
             <TextField fx:id="txtDescricao" prefHeight="104.0" prefWidth="227.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <Label fx:id="labelErrorCodigo" textFill="RED" GridPane.columnIndex="2" />
             <Label fx:id="labelErrorNome" textFill="RED" GridPane.columnIndex="2" GridPane.rowIndex="1" />
             <Label fx:id="labelErrorDescricao" textFill="RED" GridPane.columnIndex="2" GridPane.rowIndex="2" />
             <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="3">

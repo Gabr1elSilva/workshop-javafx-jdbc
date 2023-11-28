@@ -29,9 +29,9 @@
                   <TableColumn fx:id="tablePessoaColumnNascimento" prefWidth="107.0" text="Nascimento" />
               </columns>
             </TableView>
-            <TextField layoutX="581.0" layoutY="59.0" />
-            <TextField layoutX="581.0" layoutY="90.0" prefHeight="25.0" prefWidth="230.0" />
-            <TextField layoutX="581.0" layoutY="124.0" prefHeight="130.0" prefWidth="230.0" />
+            <TextField fx:id="txtCodigo" layoutX="581.0" layoutY="59.0" />
+            <TextField fx:id="txtNome" layoutX="581.0" layoutY="90.0" prefHeight="25.0" prefWidth="230.0" />
+            <TextField fx:id="txtDescricao" layoutX="581.0" layoutY="124.0" prefHeight="130.0" prefWidth="230.0" />
             <Button fx:id="pesquisarBotaoVacina" layoutX="847.0" layoutY="159.0" mnemonicParsing="false" onAction="#onPesquisarBotaoVacinaAction" prefHeight="25.0" prefWidth="90.0" text="Pesquisar" />
             <TableView fx:id="tableVacinaView" layoutX="518.0" layoutY="268.0" prefHeight="430.0" prefWidth="372.0">
               <columns>

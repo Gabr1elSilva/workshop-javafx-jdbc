@@ -23,6 +23,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
@@ -30,10 +31,19 @@ import javafx.stage.Stage;
 import model.entities.Pessoa;
 import model.entities.Vacina;
 import model.services.VacinaService;
+import model.entities.Situacao;
 
 public class MainViewController implements Initializable, DataChangeListener {
 
 	private VacinaService vacina;
+
+	@FXML
+	private TextField txtCodigo;
+
+	@FXML
+	private TextField txtNome;
+	@FXML
+	private TextField txtDescricao;
 
 	@FXML
 	private Button criarAplicacaoBotao;
@@ -87,9 +97,15 @@ public class MainViewController implements Initializable, DataChangeListener {
 
 	@FXML
 	void onEditarBotaoVacinaAction(ActionEvent event) {
-		Stage parentStage = Utils.currentStage(event);
-		Vacina obj = new Vacina();
-		createDialogForm(obj, "/gui/VacinaForm.fxml", parentStage);
+	    Vacina vacinaSelecionada = tableVacinaView.getSelectionModel().getSelectedItem();
+	    System.out.println(vacinaSelecionada);
+
+	    if (vacinaSelecionada != null) {
+	        Stage parentStage = Utils.currentStage(event);
+	        createDialogForm(vacinaSelecionada, "/gui/VacinaForm.fxml", parentStage);
+	    } else {
+	        Alerts.showAlert("Nenhuma vacina selecionada", null, "Por favor, selecione uma vacina para editar.", AlertType.WARNING);
+	    }
 	}
 
 	@FXML
@@ -106,8 +122,16 @@ public class MainViewController implements Initializable, DataChangeListener {
 
 	@FXML
 	void onPesquisarBotaoVacinaAction() {
-		pesquisarTodasVacinas();
-		System.out.println("onPesquisarBotaoVacinaAction");
+		try {
+			Long codigo = Utils.tryParseToLong(txtCodigo.getText());
+			String nome = txtNome.getText();
+			String descricao = txtDescricao.getText();
+
+			List<Vacina> listaVacinas = vacina.findByParameters(codigo, nome, descricao);
+			atualizarTabelaVacinas(listaVacinas);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@FXML
@@ -123,7 +147,7 @@ public class MainViewController implements Initializable, DataChangeListener {
 			Optional<ButtonType> result = alert.showAndWait();
 
 			if (result.isPresent() && result.get() == ButtonType.OK) {
-				vacina.deleteByCodigo(vacinaSelecionada.getCodigo());
+				vacina.updateSituacao(vacinaSelecionada.getCodigo(), Situacao.INATIVO);
 				pesquisarTodasVacinas();
 			}
 		} else {
@@ -153,7 +177,8 @@ public class MainViewController implements Initializable, DataChangeListener {
 	private void pesquisarTodasVacinas() {
 		try {
 			VacinaService vacinaService = new VacinaService();
-			List<Vacina> listaVacinas = vacinaService.findAll();
+			Situacao situacao = Situacao.ATIVO;
+			List<Vacina> listaVacinas = vacinaService.findBySituacao(situacao);
 			atualizarTabelaVacinas(listaVacinas);
 		} catch (Exception e) {
 			e.printStackTrace();

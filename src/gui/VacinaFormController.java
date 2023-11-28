@@ -27,7 +27,7 @@ public class VacinaFormController implements Initializable {
 
 	private Vacina entity;
 
-	private VacinaService service;
+	private VacinaService vacina;
 
 	private List<DataChangeListener> dataChangeListeners = new ArrayList<>();
 
@@ -38,14 +38,16 @@ public class VacinaFormController implements Initializable {
 	private TextField txtNome;
 	@FXML
 	private TextField txtDescricao;
-	@FXML
-	private Label labelErrorCodigo;
+
 	@FXML
 	private Label labelErrorNome;
+
 	@FXML
 	private Label labelErrorDescricao;
+
 	@FXML
 	private Button btOK;
+
 	@FXML
 	private Button btCancelar;
 
@@ -53,8 +55,8 @@ public class VacinaFormController implements Initializable {
 		this.entity = entity;
 	}
 
-	public void setVacinaService(VacinaService service) {
-		this.service = service;
+	public void setVacinaService(VacinaService vacina) {
+		this.vacina = vacina;
 	}
 
 	public void subscribeDataChangeListener(DataChangeListener listener) {
@@ -63,15 +65,17 @@ public class VacinaFormController implements Initializable {
 
 	@FXML
 	public void OnBtOkAction(ActionEvent event) {
-		if (entity == null) {
-			throw new IllegalStateException("A entidade estava nula");
-		}
-		if (service == null) {
-			throw new IllegalStateException("Serviço estava nulo.");
-		}
 		try {
+			if (entity == null) {
+				throw new IllegalStateException("A entidade está nula");
+			}
+			if (vacina == null) {
+				throw new IllegalStateException("O serviço está nulo");
+			}
 			entity = getFormData();
-			service.saveOrUpdate(entity);
+			
+			vacina.saveOrUpdate(entity);
+
 			notifyDataChangeListeners();
 			Utils.currentStage(event).close();
 		} catch (ValidationException e) {
@@ -90,12 +94,16 @@ public class VacinaFormController implements Initializable {
 	private Vacina getFormData() {
 		Vacina obj = new Vacina();
 
-		ValidationException exception = new ValidationException("Validation Error");
-
-		obj.setCodigo(Utils.tryParseToLong(txtCodigo.getText()));
+		ValidationException exception = new ValidationException("Validation Error");	
+		
 		if (txtNome.getText() == null || txtNome.getText().trim().equals("")) {
 			exception.addError("nome", "O campo não pode ser vazio");
 		}
+
+		if (txtDescricao.getText() == null || txtDescricao.getText().trim().equals("")) {
+			exception.addError("descricao", "O campo não pode ser vazio");
+		}
+
 		obj.setNome(txtNome.getText());
 		obj.setDescricao(txtDescricao.getText());
 
@@ -118,7 +126,7 @@ public class VacinaFormController implements Initializable {
 
 	private void initializeNodes() {
 		Constraints.setTextFieldLong(txtCodigo);
-		Constraints.setTextFieldMaxLength(txtNome, 30);
+		Constraints.setTextFieldMaxLength(txtNome, 60);
 		Constraints.setTextFieldMaxLength(txtDescricao, 1400);
 	}
 
@@ -136,6 +144,10 @@ public class VacinaFormController implements Initializable {
 
 		if (fields.contains("nome")) {
 			labelErrorNome.setText(errors.get("nome"));
+		}
+
+		if (fields.contains("descricao")) {
+			labelErrorDescricao.setText(errors.get("descricao"));
 		}
 	}
 }
