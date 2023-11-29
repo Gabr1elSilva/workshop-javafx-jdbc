@@ -22,51 +22,51 @@ public class VacinaDaoJDBC implements VacinaDao {
 	public VacinaDaoJDBC(Connection conn) {
 		this.conn = conn;
 	}
-	
+
 	public void updateSituacao(Long codigo, Situacao situacao) {
-        PreparedStatement st = null;
-        try {
-            st = conn.prepareStatement("UPDATE vacina SET situacao = ? WHERE codigo = ?");
-            st.setString(1, situacao.name());
-            st.setLong(2, codigo);
+		PreparedStatement st = null;
+		try {
+			st = conn.prepareStatement("UPDATE vacina SET situacao = ? WHERE codigo = ?");
+			st.setString(1, situacao.name());
+			st.setLong(2, codigo);
 
-            st.executeUpdate();
-        } catch (SQLException e) {
-            throw new DbException(e.getMessage());
-        } finally {
-            DB.closeStatement(st);
-        }
-    }
-	
+			st.executeUpdate();
+		} catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		} finally {
+			DB.closeStatement(st);
+		}
+	}
+
 	public List<Vacina> findBySituacao(Situacao situacao) {
-	    PreparedStatement st = null;
-	    ResultSet rs = null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
 
-	    try {
-	        st = conn.prepareStatement("SELECT * FROM vacina WHERE situacao = ? AND situacao = 'ATIVO'");
-	        st.setString(1, situacao.name());
+		try {
+			st = conn.prepareStatement("SELECT * FROM vacina WHERE situacao = ? AND situacao = 'ATIVO'");
+			st.setString(1, situacao.name());
 
-	        rs = st.executeQuery();
+			rs = st.executeQuery();
 
-	        List<Vacina> list = new ArrayList<>();
+			List<Vacina> list = new ArrayList<>();
 
-	        while (rs.next()) {
-	            Long codigo = rs.getLong("codigo");
-	            String nome = rs.getString("nome");
-	            String descricao = rs.getString("descricao");
-	            Situacao situacaoVacina = Situacao.valueOf(rs.getString("situacao"));
+			while (rs.next()) {
+				Long codigo = rs.getLong("codigo");
+				String nome = rs.getString("nome");
+				String descricao = rs.getString("descricao");
+				Situacao situacaoVacina = Situacao.valueOf(rs.getString("situacao"));
 
-	            Vacina vacina = new Vacina(codigo, nome, descricao, situacaoVacina);
-	            list.add(vacina);
-	        }
+				Vacina vacina = new Vacina(codigo, nome, descricao, situacaoVacina);
+				list.add(vacina);
+			}
 
-	        return list;
-	    } catch (SQLException e) {
-	        throw new DbException(e.getMessage());
-	    } finally {
-	        DB.closeResultSet(rs);
-	        DB.closeStatement(st);
-	    }
+			return list;
+		} catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		} finally {
+			DB.closeResultSet(rs);
+			DB.closeStatement(st);
+		}
 	}
 
 	@Override

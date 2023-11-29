@@ -1,6 +1,7 @@
 package model.dao.impl;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,117 +23,12 @@ public class PessoaDaoJDBC implements PessoaDao {
 	}
 
 	@Override
-	public void insert(Pessoa obj) {
-		PreparedStatement st = null;
-		try {
-			st = conn.prepareStatement(
-					"INSERT INTO pessoa " + "(Codigo, Nome, Cpf, DataNascimento) " + "VALUES " + "(?, ?, ?, ?)",
-					PreparedStatement.RETURN_GENERATED_KEYS);
-
-			st.setLong(1, obj.getCodigo());
-			st.setString(2, obj.getNome());
-			st.setString(3, obj.getCpf());
-			st.setObject(4, obj.getDataNascimento());
-
-			int rowsAffected = st.executeUpdate();
-
-			if (rowsAffected > 0) {
-				ResultSet rs = st.getGeneratedKeys();
-				if (rs.next()) {
-					Long codigo = rs.getLong(1);
-					obj.setCodigo(codigo);
-				}
-				DB.closeResultSet(rs);
-			} else {
-				throw new DbException("Unexpected error! No rows affected!");
-			}
-		} catch (SQLException e) {
-			throw new DbException(e.getMessage());
-		} finally {
-			DB.closeStatement(st);
-		}
-	}
-
-	@Override
-	public void update(Pessoa obj) {
-		PreparedStatement st = null;
-		try {
-			st = conn.prepareStatement(
-					"UPDATE pessoa " + "SET Nome = ?, Cpf = ?, DataNascimento = ? " + "WHERE Codigo = ?");
-
-			st.setString(1, obj.getNome());
-			st.setString(2, obj.getCpf());
-			st.setObject(3, obj.getDataNascimento());
-			st.setLong(4, obj.getCodigo());
-
-			st.executeUpdate();
-		} catch (SQLException e) {
-			throw new DbException(e.getMessage());
-		} finally {
-			DB.closeStatement(st);
-		}
-	}
-
-	@Override
-	public void deleteByCodigo(Long codigo) {
-		PreparedStatement st = null;
-		try {
-			st = conn.prepareStatement("DELETE FROM pessoa WHERE Codigo = ?");
-
-			st.setLong(1, codigo);
-
-			st.executeUpdate();
-		} catch (SQLException e) {
-			throw new DbException(e.getMessage());
-		} finally {
-			DB.closeStatement(st);
-		}
-	}
-
-	@Override
-	public Pessoa findByCodigo(Long codigo) {
-		PreparedStatement st = null;
-		ResultSet rs = null;
-		try {
-			st = conn.prepareStatement("SELECT * FROM pessoa WHERE Codigo = ?");
-			st.setLong(1, codigo);
-
-			rs = st.executeQuery();
-
-			if (rs.next()) {
-				Pessoa obj = instantiatePessoa(rs);
-				return obj;
-			}
-
-			return null;
-		} catch (SQLException e) {
-			throw new DbException(e.getMessage());
-		} finally {
-			DB.closeStatement(st);
-			DB.closeResultSet(rs);
-		}
-	}
-
-	private Pessoa instantiatePessoa(ResultSet rs) throws SQLException {
-		Pessoa obj = new Pessoa();
-		obj.setCodigo(rs.getLong("Codigo"));
-		obj.setNome(rs.getString("Nome"));
-		obj.setCpf(rs.getString("Cpf"));
-		obj.setDataNascimento(getLocalDate(rs, "DataNascimento"));
-		return obj;
-	}
-
-	private LocalDate getLocalDate(ResultSet rs, String dataNascimento) throws SQLException {
-		java.sql.Date sqlDate = rs.getDate(dataNascimento);
-		return (sqlDate != null) ? sqlDate.toLocalDate() : null;
-	}
-
-	@Override
 	public List<Pessoa> findAll() {
 		PreparedStatement st = null;
 		ResultSet rs = null;
+
 		try {
-			st = conn.prepareStatement("SELECT * FROM pessoa");
+			st = conn.prepareStatement("SELECT * FROM pessoa ORDER BY Nome");
 			rs = st.executeQuery();
 
 			List<Pessoa> list = new ArrayList<>();
@@ -150,4 +46,89 @@ public class PessoaDaoJDBC implements PessoaDao {
 			DB.closeResultSet(rs);
 		}
 	}
+
+	private Pessoa instantiatePessoa(ResultSet rs) throws SQLException {
+		Pessoa obj = new Pessoa();
+		obj.setCodigo(rs.getLong("Codigo"));
+		obj.setNome(rs.getString("Nome"));
+		obj.setCpf(rs.getString("Cpf"));
+		obj.setDataNascimento(getLocalDate(rs, "DataNascimento"));
+		return obj;
+	}
+
+	private LocalDate getLocalDate(ResultSet rs, String columnName) throws SQLException {
+		Date date = rs.getDate(columnName);
+		return (date != null) ? date.toLocalDate() : null;
+	}
+
+	@Override
+	public List<Pessoa> findByParameters(Long codigo, String nome, String cpf, LocalDate dataInicial,
+			LocalDate dataFinal) {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			StringBuilder queryBuilder = new StringBuilder("SELECT * FROM pessoa WHERE 1=1");
+
+			if (codigo != null) {
+				queryBuilder.append(" AND codigo = ?");
+			}
+
+			if (nome != null && !nome.isEmpty()) {
+				queryBuilder.append(" AND UPPER(nome) LIKE UPPER(?)");
+			}
+
+			if (cpf != null && !cpf.isEmpty()) {
+				queryBuilder.append(" AND UPPER(cpf) LIKE UPPER(?)");
+			}
+
+			if (dataInicial != null) {
+				queryBuilder.append(" AND dataNascimento >= ?");
+			}
+
+			if (dataFinal != null) {
+				queryBuilder.append(" AND dataNascimento <= ?");
+			}
+
+			st = conn.prepareStatement(queryBuilder.toString());
+
+			int parameterIndex = 1;
+
+			if (codigo != null) {
+				st.setLong(parameterIndex++, codigo);
+			}
+
+			if (nome != null && !nome.isEmpty()) {
+				st.setString(parameterIndex++, "%" + nome.toUpperCase() + "%");
+			}
+
+			if (cpf != null && !cpf.isEmpty()) {
+				st.setString(parameterIndex++, "%" + cpf.toUpperCase() + "%");
+			}
+
+			if (dataInicial != null) {
+				st.setDate(parameterIndex++, Date.valueOf(dataInicial));
+			}
+
+			if (dataFinal != null) {
+				st.setDate(parameterIndex++, Date.valueOf(dataFinal));
+			}
+
+			rs = st.executeQuery();
+
+			List<Pessoa> pessoas = new ArrayList<>();
+
+			while (rs.next()) {
+				Pessoa pessoa = instantiatePessoa(rs);
+				pessoas.add(pessoa);
+			}
+
+			return pessoas;
+		} catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		} finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	}
+
 }

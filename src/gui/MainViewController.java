@@ -9,6 +9,7 @@ import java.util.ResourceBundle;
 
 import gui.listeners.DataChangeListener;
 import gui.util.Alerts;
+import gui.util.Constraints;
 import gui.util.Utils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,6 +22,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -28,22 +31,47 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import model.entities.Aplicacao;
 import model.entities.Pessoa;
-import model.entities.Vacina;
-import model.services.VacinaService;
 import model.entities.Situacao;
+import model.entities.Vacina;
+import model.services.AplicacaoService;
+import model.services.PessoaService;
+import model.services.VacinaService;
 
 public class MainViewController implements Initializable, DataChangeListener {
 
 	private VacinaService vacina;
 
-	@FXML
-	private TextField txtCodigo;
+	private PessoaService pessoa;
+
+	private AplicacaoService aplicacaoService;
 
 	@FXML
-	private TextField txtNome;
+	private TextField txtCodigoVacina;
+
 	@FXML
-	private TextField txtDescricao;
+	private TextField txtNomeVacina;
+	@FXML
+	private TextField txtDescricaoVacina;
+
+	@FXML
+	private TextField txtCodigoPessoa;
+
+	@FXML
+	private TextField txtNomePessoa;
+
+	@FXML
+	private TextField txtCpfPessoa;
+
+	@FXML
+	private DatePicker dpApartir;
+
+	@FXML
+	private DatePicker dpAte;
+
+	@FXML
+	private Label labelErrorCodigo;
 
 	@FXML
 	private Button criarAplicacaoBotao;
@@ -92,20 +120,48 @@ public class MainViewController implements Initializable, DataChangeListener {
 
 	@FXML
 	void onCriarAplicacaoBotaoAction() {
-		System.out.println("onCriarAplicacaoBotaoAction");
+		try {
+			List<Pessoa> pessoasSelecionadas = tablePessoaView.getSelectionModel().getSelectedItems();
+			List<Vacina> vacinasSelecionadas = tableVacinaView.getSelectionModel().getSelectedItems();
+
+			if (pessoasSelecionadas.isEmpty() || vacinasSelecionadas.isEmpty()) {
+				Alerts.showAlert("Erro", "Seleção Inválida",
+						"Selecione uma pessoa e uma vacina para criar uma aplicação.", AlertType.ERROR);
+				return;
+			}
+
+			for (Pessoa pessoa : pessoasSelecionadas) {
+				for (Vacina vacina : vacinasSelecionadas) {
+					Aplicacao aplicacao = new Aplicacao();
+					aplicacao.setPessoa(pessoa);
+					aplicacao.setVacina(vacina);
+					aplicacao.setSituacao(Situacao.ATIVO);
+
+					aplicacaoService.insert(aplicacao);
+				}
+			}
+
+			Alerts.showAlert("Sucesso", "Aplicações Criadas", "As aplicações foram criadas com sucesso.",
+					AlertType.INFORMATION);
+		} catch (Exception e) {
+			Alerts.showAlert("Erro", "Erro ao Criar Aplicações", "Ocorreu um erro ao criar as aplicações.",
+					AlertType.ERROR);
+			e.printStackTrace();
+		}
 	}
 
 	@FXML
 	void onEditarBotaoVacinaAction(ActionEvent event) {
-	    Vacina vacinaSelecionada = tableVacinaView.getSelectionModel().getSelectedItem();
-	    System.out.println(vacinaSelecionada);
+		Vacina vacinaSelecionada = tableVacinaView.getSelectionModel().getSelectedItem();
+		System.out.println(vacinaSelecionada);
 
-	    if (vacinaSelecionada != null) {
-	        Stage parentStage = Utils.currentStage(event);
-	        createDialogForm(vacinaSelecionada, "/gui/VacinaForm.fxml", parentStage);
-	    } else {
-	        Alerts.showAlert("Nenhuma vacina selecionada", null, "Por favor, selecione uma vacina para editar.", AlertType.WARNING);
-	    }
+		if (vacinaSelecionada != null) {
+			Stage parentStage = Utils.currentStage(event);
+			createDialogForm(vacinaSelecionada, "/gui/VacinaForm.fxml", parentStage);
+		} else {
+			Alerts.showAlert("Nenhuma vacina selecionada", null, "Por favor, selecione uma vacina para editar.",
+					AlertType.WARNING);
+		}
 	}
 
 	@FXML
@@ -117,17 +173,42 @@ public class MainViewController implements Initializable, DataChangeListener {
 
 	@FXML
 	void onPesquisarBotaoPessoaAction() {
-		System.out.println("onPesquisarBotaoPessoaAction");
+		try {
+			Long codigo = Utils.tryParseToLong(txtCodigoPessoa.getText());
+			String nome = txtNomePessoa.getText();
+			String cpf = txtCpfPessoa.getText();
+			LocalDate dataInicio = dpApartir.getValue();
+			LocalDate dataFinal = dpAte.getValue();
+
+			List<Pessoa> listaPessoas;
+
+			if (codigo == null && nome.isEmpty() && cpf.isEmpty() && dataInicio == null && dataFinal == null) {
+				listaPessoas = pessoa.findAll();
+			} else {
+				listaPessoas = pessoa.findByParameters(codigo, nome, cpf, dataInicio, dataFinal);
+			}
+
+			atualizarTabelaPessoas(listaPessoas);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@FXML
 	void onPesquisarBotaoVacinaAction() {
 		try {
-			Long codigo = Utils.tryParseToLong(txtCodigo.getText());
-			String nome = txtNome.getText();
-			String descricao = txtDescricao.getText();
+			Long codigo = Utils.tryParseToLong(txtCodigoVacina.getText());
+			String nome = txtNomeVacina.getText();
+			String descricao = txtDescricaoVacina.getText();
 
-			List<Vacina> listaVacinas = vacina.findByParameters(codigo, nome, descricao);
+			List<Vacina> listaVacinas;
+
+			if (codigo == null && nome.isEmpty() && descricao.isEmpty()) {
+				listaVacinas = vacina.findBySituacao(Situacao.ATIVO);
+			} else {
+				listaVacinas = vacina.findByParameters(codigo, nome, descricao);
+			}
+
 			atualizarTabelaVacinas(listaVacinas);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -159,8 +240,11 @@ public class MainViewController implements Initializable, DataChangeListener {
 	@Override
 	public void initialize(URL uri, ResourceBundle rb) {
 		this.vacina = new VacinaService();
+		this.pessoa = new PessoaService();
+		this.aplicacaoService = new AplicacaoService();
 		initializeNodes();
 		pesquisarTodasVacinas();
+		pesquisarTodasPessoas();
 	}
 
 	private void initializeNodes() {
@@ -172,6 +256,12 @@ public class MainViewController implements Initializable, DataChangeListener {
 		tablePessoaColumnNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
 		tablePessoaColumnCpf.setCellValueFactory(new PropertyValueFactory<>("cpf"));
 		tablePessoaColumnNascimento.setCellValueFactory(new PropertyValueFactory<>("dataNascimento"));
+		Utils.formatTableColumnDate(tablePessoaColumnNascimento, "dd/MM/yyyy");
+		Constraints.setTextFieldLong(txtCodigoPessoa);
+		Constraints.setTextFieldMaxLength(txtNomePessoa, 70);
+		Constraints.setTextFieldMaxLength(txtCpfPessoa, 11);
+		Utils.formatDatePicker(dpApartir, "dd/MM/yyyy");
+		Utils.formatDatePicker(dpAte, "dd/MM/yyyy");
 	}
 
 	private void pesquisarTodasVacinas() {
@@ -192,6 +282,26 @@ public class MainViewController implements Initializable, DataChangeListener {
 			tableVacinaView.setItems(obsList);
 		} else {
 			System.err.println("A lista de vacinas é nula.");
+		}
+	}
+
+	private void pesquisarTodasPessoas() {
+		try {
+			PessoaService pessoaService = new PessoaService();
+			List<Pessoa> listaPessoas = pessoaService.findAll();
+			atualizarTabelaPessoas(listaPessoas);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void atualizarTabelaPessoas(List<Pessoa> listaPessoas) {
+		if (listaPessoas != null) {
+			ObservableList<Pessoa> obsList = FXCollections.observableArrayList(listaPessoas);
+			tablePessoaView.getItems().clear();
+			tablePessoaView.setItems(obsList);
+		} else {
+			System.err.println("A lista de pessoas é nula.");
 		}
 	}
 

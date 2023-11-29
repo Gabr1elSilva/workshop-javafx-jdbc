@@ -1,14 +1,12 @@
 package model.dao;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import model.entities.Pessoa;
 
 public interface PessoaDao {
 	
-	void insert(Pessoa obj);
-	void update(Pessoa obj);
-	void deleteByCodigo(Long codigo);
-	Pessoa findByCodigo(Long codigo);
+	List<Pessoa> findByParameters(Long codigo, String nome, String descricao, LocalDate dataInicial, LocalDate dataFinal);
 	List<Pessoa> findAll();
 }
