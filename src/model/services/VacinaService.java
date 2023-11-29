@@ -15,14 +15,15 @@ public class VacinaService {
 		return dao.findAll();
 	}
 
-	public void insert(Vacina obj) {
-		dao.insert(obj);
+	public void saveOrUpdate(Vacina obj) {
+		if (obj.getCodigo() == null) {
+			dao.insert(obj);
+		}
+		else {
+			dao.update(obj);
+		}
 	}
-
-	public void update(Vacina obj) {
-		dao.insert(obj);
-	}
-
+	
 	public void deleteByCodigo(Long codigo) {
 		dao.deleteByCodigo(codigo);
 	}

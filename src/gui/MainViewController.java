@@ -153,7 +153,9 @@ public class MainViewController implements Initializable, DataChangeListener {
 	@FXML
 	void onEditarBotaoVacinaAction(ActionEvent event) {
 		Vacina vacinaSelecionada = tableVacinaView.getSelectionModel().getSelectedItem();
-		System.out.println(vacinaSelecionada);
+
+		VacinaFormController controller = new VacinaFormController();
+		controller.setVacina(vacinaSelecionada); 
 
 		if (vacinaSelecionada != null) {
 			Stage parentStage = Utils.currentStage(event);
@@ -251,6 +253,9 @@ public class MainViewController implements Initializable, DataChangeListener {
 		tableVacinaColumnCodigo.setCellValueFactory(new PropertyValueFactory<>("codigo"));
 		tableVacinaColumnNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
 		tableVacinaColumnDescricao.setCellValueFactory(new PropertyValueFactory<>("descricao"));
+		Constraints.setTextFieldLong(txtCodigoVacina);
+		Constraints.setTextFieldMaxLength(txtNomeVacina, 70);
+		Constraints.setTextFieldMaxLength(txtDescricaoVacina, 2000);
 
 		tablePessoaColumnCodigo.setCellValueFactory(new PropertyValueFactory<>("codigo"));
 		tablePessoaColumnNome.setCellValueFactory(new PropertyValueFactory<>("nome"));

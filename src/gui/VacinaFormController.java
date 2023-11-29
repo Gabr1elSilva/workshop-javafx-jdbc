@@ -73,12 +73,16 @@ public class VacinaFormController implements Initializable {
 				throw new IllegalStateException("O serviço está nulo");
 			}
 			entity = getFormData();
+			
+			vacina.saveOrUpdate(entity);
 
-			if (entity.getCodigo() == null) {
-				vacina.insert(entity);
-			} else {
-				vacina.update(entity);
-			}
+//			if (entity.getCodigo() == null) {
+//				vacina.insert(entity);
+//			} else {
+//				System.out.println("Atualizando a vacina");
+//				vacina.update(entity);
+//
+//			}
 
 			notifyDataChangeListeners();
 			Utils.currentStage(event).close();
@@ -99,6 +103,8 @@ public class VacinaFormController implements Initializable {
 		Vacina obj = new Vacina();
 
 		ValidationException exception = new ValidationException("Validation Error");
+
+		obj.setCodigo(Utils.tryParseToLong(txtCodigo.getText()));
 
 		if (txtNome.getText() == null || txtNome.getText().trim().equals("")) {
 			exception.addError("nome", "O campo não pode ser vazio");
